@@ -1,1 +1,0 @@
-# weiqi_mobile

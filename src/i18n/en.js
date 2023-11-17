@@ -1,0 +1,40 @@
+const en = {
+  translation: {
+    welcome: "Welcome to the Home Screen",
+    click_me: "Click Me",
+    saveGamePrompt: "Do you want to save the current game?",
+    saveChanges: "Save Changes",
+    unsavedChanges:
+      "The current game has unsaved changes. Do you want to save them?",
+    cancel: "Cancel",
+    dontSave: "Don't Save",
+    save: "Save",
+    saveCurrentGame: "Save Current Game",
+    confirm: "Confirm",
+    deleteWarning: "Delete Warning",
+    deleteConfirmation:
+      "Are you sure you want to delete this move and the following board state?",
+    inputComment: "Enter comment",
+    gameSaved: "Game saved",
+    saveFailed: "Save failed",
+    boardSettings: "Board Settings",
+    editMessage: "Edit Message",
+    newRecord: "New Record",
+    gameName: "Game Name",
+    time: "Time",
+    blackPlayer: "Black Player",
+    blackRank: "Black Rank",
+    whitePlayer: "White Player",
+    whiteRank: "White Rank",
+    komi: "Komi",
+    handicap: "handicap",
+    result: "Result",
+    remarks: "Remarks",
+    markLastMove: "Mark Last Move",
+    markAllMoves: "Mark All Moves",
+    markLastMoveNumber: "Mark Last Move Number",
+    moveMarks: "Move Marks",
+  },
+};
+
+export default en;
