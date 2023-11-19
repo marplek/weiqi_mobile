@@ -6,6 +6,7 @@ import {
 } from "@react-navigation/stack";
 import bottomTabBarScreen from "../screens/bottomTabBarScreen";
 import LoadingScreen from "../screens/loadingScreen";
+import WeiqiBoardScreen from "../screens/category/weiqiBoardScreen";
 
 const Stack = createStackNavigator();
 
@@ -24,7 +25,10 @@ const AppStack = () => {
           component={bottomTabBarScreen}
           options={{ ...TransitionPresets.DefaultTransition }}
         />
+        <Stack.Screen name="WeiqiBoard" component={WeiqiBoardScreen} />
+
       </Stack.Navigator>
+
     </NavigationContainer>
   );
 };

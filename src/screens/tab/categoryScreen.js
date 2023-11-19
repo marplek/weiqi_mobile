@@ -19,7 +19,7 @@ const categoriesList = [
   {
     id: "1",
     categoryImage: require("../../../assets/images/category/game.png"),
-    category: "RECORD GAME",
+    category: "WeiqiBoard",
   },
   {
     id: "2",
