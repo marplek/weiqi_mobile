@@ -7,7 +7,9 @@ import {
 import bottomTabBarScreen from "../screens/bottomTabBarScreen";
 import LoadingScreen from "../screens/loadingScreen";
 import WeiqiBoardScreen from "../screens/category/weiqiBoardScreen";
-
+import signinScreen from "../screens/auth/signinScreen";
+import signupScreen from "../screens/auth/signupScreen";
+import verificationScreen from "../screens/auth/verificationScreen";
 const Stack = createStackNavigator();
 
 const AppStack = () => {
@@ -21,14 +23,19 @@ const AppStack = () => {
       >
         <Stack.Screen name="Loading" component={LoadingScreen} />
         <Stack.Screen
+          name="Signin"
+          component={signinScreen}
+          options={{ ...TransitionPresets.DefaultTransition }}
+        />
+        <Stack.Screen name="Signup" component={signupScreen} />
+        <Stack.Screen name="Verification" component={verificationScreen} />
+        <Stack.Screen
           name="BottomTabBar"
           component={bottomTabBarScreen}
           options={{ ...TransitionPresets.DefaultTransition }}
         />
         <Stack.Screen name="WeiqiBoard" component={WeiqiBoardScreen} />
-
       </Stack.Navigator>
-
     </NavigationContainer>
   );
 };

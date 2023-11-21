@@ -5,6 +5,7 @@ import MenuModal from "../../components/WeiqiBoard/MenuModal";
 import MessageModal from "../../components/WeiqiBoard/MessageModal";
 import BoardSettingsModal from "../../components/WeiqiBoard/BoardSettingsModal";
 import { useTranslation } from "react-i18next";
+import { Colors, Fonts, Sizes } from "../../constants/styles";
 
 import {
   View,
@@ -13,19 +14,18 @@ import {
   StyleSheet,
   Alert,
   TextInput,
-  TouchableOpacity,
+  StatusBar,
+  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   Keyboard,
 } from "react-native";
-import { Header, Icon } from "react-native-elements";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import Weiqi from "../../utils/JGO/Weiqi";
 import Record from "../../utils/JGO/Record";
 import SGFConverter from "../../utils/JGO/SGF";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
 
 const BOARD_SIZE = 19;
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -363,130 +363,144 @@ const WeiqiBoardScreen = ({ route }) => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <Header
-        statusBarProps={{
-          backgroundColor: "#fff",
-          barStyle: "dark-content",
-        }}
-        containerStyle={{
-          backgroundColor: "#fff",
-        }}
-        leftComponent={
-          <View style={styles.leftContainer}>
-            <MaterialIcons
-              name="arrow-back"
-              size={Math.floor(SCREEN_HEIGHT * 0.035)}
-              onPress={async () => {
-                if (await isBoardStateChanged()) {
-                  Alert.alert(
-                    t("saveChanges"),
-                    t("unsavedChanges"),
-                    [
-                      {
-                        text: t("cancel"),
-                        onPress: () => { },
-                        style: "cancel",
-                      },
-                      {
-                        text: t("dontSave"),
-                        onPress: () => navigation.goBack(),
-                        style: "destructive",
-                      },
-                      {
-                        text: t("save"),
-                        onPress: async () => {
-                          await handleSave();
-                          navigation.goBack();
-                        },
-                      },
-                    ],
-                    { cancelable: false }
-                  );
-                } else {
-                  navigation.goBack();
-                }
-              }}
-            />
-          </View>
-        }
-        rightComponent={
-          <View style={styles.rightContainer}>
-            <View style={styles.iconContainer}>
-              <Icon
-                name="save"
-                size={Math.floor(SCREEN_HEIGHT * 0.035)}
-                type="material"
-                onPress={handleSave}
-              />
-            </View>
-            <Icon
-              name="menu"
-              size={Math.floor(SCREEN_HEIGHT * 0.035)}
-              type="material"
-              onPress={toggleModal}
-            />
-          </View>
-        }
-      />
-      <MenuModal
-        visible={modalVisible}
-        onRequestClose={toggleModal}
-        onMenuItemPress={handleMenuItemPress}
-      />
-      <MessageModal
-        visible={messageModalVisible}
-        onRequestClose={toggleMessageModal}
-        onSave={handleMessageSave}
-        defaultValues={recordMetaData}
-      />
-      <BoardSettingsModal
-        visible={boardSettingsVisible}
-        onRequestClose={() => setBoardSettingsVisible(false)}
-        onOptionSelected={handleBoardSettingsOptionSelected}
-      />
-      <WeiqiBoard
-        boardSize={BOARD_SIZE}
-        SCREEN_WIDTH={SCREEN_WIDTH}
-        stones={stones}
-        markers={markers}
-        onPress={handlePress}
-        selectedLetter={selectedLetter}
-        currentMove={currentMove}
-      />
-      <View>
-        <TextInput
-          style={styles.commentInput}
-          placeholder={t("inputComment")}
-          value={comment}
-          onChangeText={setComment}
-          maxLength={30}
-          selectionColor="grey"
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backColor }}>
+      <StatusBar translucent={false} backgroundColor={Colors.blackColor} />
+      <View style={{ flex: 1 }}>
+        {header()}
+        {menuModal()}
+        {messageModal()}
+        <BoardSettingsModal
+          visible={boardSettingsVisible}
+          onRequestClose={() => setBoardSettingsVisible(false)}
+          onOptionSelected={handleBoardSettingsOptionSelected}
         />
-      </View>
-      <Text style={styles.sgfText} key={SGFConverter.toSGF(record)}>
-        {SGFConverter.toSGF(record)}
-      </Text>
-      <Text style={styles.sgfText}>
-        {selectedMode}
-        {selectedLetter}
-      </Text>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <View style={styles.navigationButtonsContainer}>
-          <NavigationButtons
-            onNavigate={handleNavigation}
-            screenHeight={SCREEN_HEIGHT}
-            setSelectedMode={setSelectedMode}
+        <WeiqiBoard
+          boardSize={BOARD_SIZE}
+          SCREEN_WIDTH={SCREEN_WIDTH}
+          stones={stones}
+          markers={markers}
+          onPress={handlePress}
+          selectedLetter={selectedLetter}
+          currentMove={currentMove}
+        />
+        <View>
+          <TextInput
+            style={styles.commentInput}
+            placeholder={t("inputComment")}
+            value={comment}
+            onChangeText={setComment}
+            maxLength={30}
+            selectionColor="grey"
           />
         </View>
-      </KeyboardAvoidingView>
-    </View>
+        <Text style={styles.sgfText} key={SGFConverter.toSGF(record)}>
+          {SGFConverter.toSGF(record)}
+        </Text>
+        <Text style={styles.sgfText}>
+          {selectedMode}
+          {selectedLetter}
+        </Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.navigationButtonsContainer}>
+            <NavigationButtons
+              onNavigate={handleNavigation}
+              screenHeight={SCREEN_HEIGHT}
+              setSelectedMode={setSelectedMode}
+            />
+          </View>
+        </KeyboardAvoidingView>
+      </View>
+    </SafeAreaView>
   );
+
+  function header() {
+    return (
+      <View style={styles.headerWrapStyle}>
+        <MaterialIcons
+          name="arrow-back"
+          size={Math.floor(SCREEN_HEIGHT * 0.045)}
+          onPress={async () => {
+            if (await isBoardStateChanged()) {
+              Alert.alert(
+                t("saveChanges"),
+                t("unsavedChanges"),
+                [
+                  {
+                    text: t("cancel"),
+                    onPress: () => {},
+                    style: "cancel",
+                  },
+                  {
+                    text: t("dontSave"),
+                    onPress: () => navigation.goBack(),
+                    style: "destructive",
+                  },
+                  {
+                    text: t("save"),
+                    onPress: async () => {
+                      await handleSave();
+                      navigation.goBack();
+                    },
+                  },
+                ],
+                { cancelable: false }
+              );
+            } else {
+              navigation.goBack();
+            }
+          }}
+        />
+        <View style={styles.rightIcons}>
+          <MaterialIcons
+            name="save"
+            color={Colors.blackColor}
+            size={Math.floor(SCREEN_HEIGHT * 0.045)}
+            onPress={handleSave}
+          />
+          <MaterialIcons
+            name="menu"
+            color={Colors.blackColor}
+            size={Math.floor(SCREEN_HEIGHT * 0.045)}
+            onPress={toggleModal}
+          />
+        </View>
+      </View>
+    );
+  }
+
+  function menuModal() {
+    <MenuModal
+      visible={modalVisible}
+      onRequestClose={toggleModal}
+      onMenuItemPress={handleMenuItemPress}
+    />;
+  }
+  function messageModal() {
+    <MessageModal
+      visible={messageModalVisible}
+      onRequestClose={toggleMessageModal}
+      onSave={handleMessageSave}
+      defaultValues={recordMetaData}
+    />;
+  }
 };
 const styles = StyleSheet.create({
+  headerWrapStyle: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: Sizes.fixPadding * 2.0,
+    paddingVertical: Sizes.fixPadding + 5.0,
+  },
+  rightIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: Math.floor(SCREEN_HEIGHT * 0.08),
+  },
   sgfText: {
     marginTop: 10,
     fontSize: 16,
@@ -498,26 +512,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-  },
-
-  leftContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  rightContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  headerText: {
-    marginLeft: Math.floor(SCREEN_HEIGHT * 0.015),
-    fontSize: Math.floor(SCREEN_HEIGHT * 0.03),
-    fontWeight: "bold",
-  },
-  textStyle: {
-    fontSize: iconAndTextSize,
-  },
-  iconContainer: {
-    marginRight: Math.floor(SCREEN_HEIGHT * 0.01),
   },
 });
 export default WeiqiBoardScreen;

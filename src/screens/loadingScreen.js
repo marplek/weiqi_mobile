@@ -9,7 +9,7 @@ const LoadingScreen = ({ navigation }) => {
       await Font.loadAsync({
         zh_tw: require("../../assets/fonts/jf-openhuninn-2.0.ttf"),
       });
-      navigation.navigate("BottomTabBar");
+      navigation.navigate("Signin");
     }
     loadFont();
   });
