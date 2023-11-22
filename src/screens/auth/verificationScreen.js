@@ -8,13 +8,15 @@ import {
   Text,
   StyleSheet,
   ImageBackground,
+  Dimensions,
 } from "react-native";
 import { Colors, Fonts, Sizes } from "../../constants/styles";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Circle } from "react-native-animated-spinkit";
 import OTPTextView from "react-native-otp-textinput";
 import { Overlay } from "@rneui/themed";
-
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
 const VerificationScreen = ({ navigation }) => {
   const [otpInput, setotpInput] = useState("");
   const [isLoading, setisLoading] = useState(false);

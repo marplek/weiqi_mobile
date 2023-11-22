@@ -1,13 +1,21 @@
 import React, { useState, useCallback } from "react";
 import { Colors, Fonts, Sizes } from "../constants/styles";
-import { BackHandler, Text, View, StyleSheet, Image } from "react-native";
+import {
+  Dimensions,
+  BackHandler,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+} from "react-native";
 import HomeScreen from "./tab/homeScreen";
 import CategoryScreen from "./tab/categoryScreen";
 import ProfileScreen from "./tab/profileScreen";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = ({ navigation }) => {
@@ -40,7 +48,10 @@ const TabNavigator = ({ navigation }) => {
           headerShown: false,
           tabBarShowLabel: false,
           tabBarHideOnKeyboard: true,
-          tabBarStyle: { backgroundColor: Colors.whiteColor, height: 60.0 },
+          tabBarStyle: {
+            backgroundColor: Colors.whiteColor,
+            height: SCREEN_HEIGHT * 0.09,
+          },
         }}
       >
         <Tab.Screen
@@ -96,8 +107,8 @@ const TabNavigator = ({ navigation }) => {
       <Image
         source={icon}
         style={{
-          width: 25.0,
-          height: 25.0,
+          width: SCREEN_HEIGHT * 0.03,
+          height: SCREEN_HEIGHT * 0.03,
           resizeMode: "contain",
           tintColor: focused ? Colors.blackColor : Colors.grayColor,
         }}

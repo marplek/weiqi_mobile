@@ -11,11 +11,13 @@ import {
   Image,
   TextInput,
   ImageBackground,
+  Dimensions,
 } from "react-native";
 import { Colors, Fonts, Sizes } from "../../constants/styles";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
 const SigninScreen = ({ navigation }) => {
   const backAction = () => {
     backClickCount == 1 ? BackHandler.exitApp() : _spring();
@@ -224,7 +226,10 @@ const SigninScreen = ({ navigation }) => {
       <View style={styles.loginWithGoogleButtonStyle}>
         <Image
           source={require("../../../assets/images/google.png")}
-          style={{ height: 30.0, width: 30.0 }}
+          style={{
+            height: SCREEN_HEIGHT * 0.04,
+            width: SCREEN_HEIGHT * 0.04,
+          }}
           resizeMode="cover"
         />
         <Text
@@ -262,14 +267,7 @@ const styles = StyleSheet.create({
     elevation: 3.0,
     marginHorizontal: Sizes.fixPadding * 2.0,
   },
-  socialMediaOptionsWrapStyle: {
-    width: 35.0,
-    height: 35.0,
-    borderRadius: 17.5,
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: Sizes.fixPadding - 5.0,
-  },
+
   orIndicatorWrapStyle: {
     flexDirection: "row",
     alignItems: "center",
@@ -304,7 +302,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: Colors.whiteColor,
     flexDirection: "row",
-    height: 55.0,
+    height: SCREEN_HEIGHT * 0.08,
     marginBottom: Sizes.fixPadding * 2.0,
   },
 });
