@@ -24,7 +24,7 @@ const categoriesList = [
   {
     id: "2",
     categoryImage: require("../../../assets/images/category/game.png"),
-    category: "MY GAME",
+    category: "Games",
   },
   {
     id: "3",

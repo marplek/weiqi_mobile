@@ -12,9 +12,6 @@ const WeiqiBoard = ({
   selectedLetter,
   currentMove,
 }) => {
-  console.log(boardSize);
-  console.log(SCREEN_WIDTH);
-  console.log(currentMove);
   const boardWidth = Math.floor(SCREEN_WIDTH * 0.91);
   const restWidth = Math.floor(SCREEN_WIDTH * 0.045);
   const gridSpacing = boardWidth / (boardSize - 1);

@@ -7,6 +7,7 @@ import {
 import bottomTabBarScreen from "../screens/bottomTabBarScreen";
 import LoadingScreen from "../screens/loadingScreen";
 import WeiqiBoardScreen from "../screens/category/weiqiBoardScreen";
+import GamesScreen from "../screens/category/GamesScreen";
 import signinScreen from "../screens/auth/signinScreen";
 import signupScreen from "../screens/auth/signupScreen";
 import verificationScreen from "../screens/auth/verificationScreen";
@@ -35,6 +36,7 @@ const AppStack = () => {
           options={{ ...TransitionPresets.DefaultTransition }}
         />
         <Stack.Screen name="WeiqiBoard" component={WeiqiBoardScreen} />
+        <Stack.Screen name="Games" component={GamesScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
