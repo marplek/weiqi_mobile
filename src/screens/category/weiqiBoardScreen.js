@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import WeiqiBoard from "../../components/WeiqiBoard/WeiqiBoard";
 import NavigationButtons from "../../components/WeiqiBoard/NavigationButtons";
 import MenuModal from "../../components/WeiqiBoard/MenuModal";
@@ -6,6 +6,7 @@ import MessageModal from "../../components/WeiqiBoard/MessageModal";
 import BoardSettingsModal from "../../components/WeiqiBoard/BoardSettingsModal";
 import { useTranslation } from "react-i18next";
 import { Colors, Fonts, Sizes } from "../../constants/styles";
+import uuid from "react-native-uuid";
 
 import {
   View,
@@ -19,13 +20,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  BackHandler,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import Weiqi from "../../utils/JGO/Weiqi";
 import Record from "../../utils/JGO/Record";
 import SGFConverter from "../../utils/JGO/SGF";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 const BOARD_SIZE = 19;
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -33,7 +35,6 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 const boardWidth = Math.floor(SCREEN_WIDTH * 0.91);
 const restWidth = Math.floor(SCREEN_WIDTH * 0.045);
 const gridSpacing = boardWidth / (BOARD_SIZE - 1);
-const iconAndTextSize = Math.floor(SCREEN_HEIGHT * 0.035);
 
 const WeiqiBoardScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -45,7 +46,7 @@ const WeiqiBoardScreen = ({ route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [messageModalVisible, setMessageModalVisible] = useState(false);
   const [boardSettingsVisible, setBoardSettingsVisible] = useState(false);
-  const [gameIndex, setGameIndex] = useState(route.params?.gameIndex);
+  const [gameId, setGameId] = useState(route.params?.data.id);
   const [recordMetaData, setRecordMetaData] = useState(record.getMetaData());
   const [addingBranch, setAddBranch] = useState(false);
   const [comment, setComment] = useState("");
@@ -83,16 +84,59 @@ const WeiqiBoardScreen = ({ route }) => {
     }
   }, [comment]);
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = async () => {
+        if (await isBoardStateChanged()) {
+          Alert.alert(
+            t("saveChanges"),
+            t("unsavedChanges"),
+            [
+              {
+                text: t("cancel"),
+                onPress: () => {},
+                style: "cancel",
+              },
+              {
+                text: t("dontSave"),
+                onPress: () => navigation.goBack(),
+              },
+              {
+                text: t("save"),
+                onPress: async () => {
+                  await handleSave();
+                  navigation.goBack();
+                },
+              },
+            ],
+            { cancelable: false }
+          );
+          return true;
+        } else {
+          navigation.goBack();
+          return true;
+        }
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      return () => backHandler.remove();
+    }, [record, navigation])
+  );
+
   useEffect(() => {
-    if (route.params?.record) {
-      const newRecord = SGFConverter.toRecord(route.params.record);
+    if (route.params?.data) {
+      const newRecord = SGFConverter.toRecord(route.params.data.sgf);
       setRecord(newRecord);
       setStones(newRecord.getBoard());
       setMarkers(newRecord.getMarkers());
       setCurrentPlayer(newRecord.currentNode.player === 1 ? -1 : 1);
       setCurrentMove(newRecord.currentNode.position);
     }
-  }, [route.params?.record]);
+  }, [route.params?.data]);
 
   const handlePress = (event) => {
     const x = event.nativeEvent.locationX;
@@ -142,32 +186,33 @@ const WeiqiBoardScreen = ({ route }) => {
     try {
       const sgf = SGFConverter.toSGF(record);
       const savedGamesJSON = await SecureStore.getItemAsync("savedGames");
-      const savedGames = JSON.parse(savedGamesJSON) || [];
-      let updatedGameIndex = gameIndex;
-      if (gameIndex !== undefined) {
-        // Update the existing game
-        savedGames[gameIndex] = sgf;
+      let savedGames = JSON.parse(savedGamesJSON) || [];
+
+      let gameIndex = savedGames.findIndex((game) => game.id === gameId);
+      let gameData;
+
+      if (gameIndex !== -1) {
+        gameData = {
+          ...savedGames[gameIndex],
+          sgf: sgf,
+          timestamp: new Date().toISOString(),
+        };
+        savedGames[gameIndex] = gameData;
       } else {
-        // Add a new game
-        savedGames.push(sgf);
-        updatedGameIndex = savedGames.length - 1; // Save the index of the new game
+        gameData = {
+          id: uuid.v4(),
+          sgf: sgf,
+          timestamp: new Date().toISOString(),
+        };
+        savedGames.push(gameData);
+        setGameId(gameData.id);
       }
+
       await SecureStore.setItemAsync("savedGames", JSON.stringify(savedGames));
-      setGameIndex(updatedGameIndex); // Update the state with the new index
-      Alert.alert(
-        "", // 空字符串作为标题
-        t("gameSaved"),
-        [{ text: "OK", onPress: () => console.log("OK Pressed") }],
-        { cancelable: true }
-      );
+      Alert.alert("", t("gameSaved"), [{ text: "OK" }], { cancelable: true });
     } catch (error) {
       console.log(error);
-      Alert.alert(
-        "", // 空字符串作为标题
-        t("saveFailed"),
-        [{ text: "OK", onPress: () => console.log("OK Pressed") }],
-        { cancelable: true }
-      );
+      Alert.alert("", t("saveFailed"), [{ text: "OK" }], { cancelable: true });
     }
   };
 
@@ -281,7 +326,7 @@ const WeiqiBoardScreen = ({ route }) => {
   };
 
   const handleMessageSave = (message) => {
-    setRecordMetaData(message); // Update the recordMetaData state
+    setRecordMetaData(message);
     record.setMetaData(message);
     toggleMessageModal();
   };
@@ -332,34 +377,73 @@ const WeiqiBoardScreen = ({ route }) => {
         setModalVisible(false);
         setBoardSettingsVisible(true);
         break;
+      case "delete_record":
+        Alert.alert(
+          t("confirmDelete"),
+          t("confirmDeleteMessage"),
+          [
+            {
+              text: t("cancel"),
+              style: "cancel",
+            },
+            {
+              text: t("delete"),
+              onPress: () => {
+                if (route.params?.data) {
+                  deleteRecord(route.params.data.id);
+                } else {
+                  navigation.goBack();
+                }
+              },
+            },
+          ],
+          { cancelable: false }
+        );
       default:
         break;
     }
     toggleModal();
   };
 
+  const deleteRecord = async (gameId) => {
+    try {
+      let savedGamesJSON = await SecureStore.getItemAsync("savedGames");
+      let savedGames = JSON.parse(savedGamesJSON) || [];
+      const gameIndex = savedGames.findIndex((game) => game.id === gameId);
+
+      if (gameIndex !== -1) {
+        savedGames.splice(gameIndex, 1);
+        await SecureStore.setItemAsync(
+          "savedGames",
+          JSON.stringify(savedGames)
+        );
+        navigation.goBack();
+      }
+    } catch (error) {
+      console.error("Failed to delete record:", error);
+      Alert.alert(t("error"), t("deleteFailed"));
+    }
+  };
+
   const handleBoardSettingsOptionSelected = (option) => {
     console.log("Selected option:", option);
-    // Handle the selected option accordingly
     setBoardSettingsVisible(false);
   };
 
   const isBoardStateChanged = async () => {
     const savedGamesJSON = await SecureStore.getItemAsync("savedGames");
     const savedGames = JSON.parse(savedGamesJSON) || [];
-    const savedSGF = savedGames[gameIndex];
     const currentSGF = SGFConverter.toSGF(record);
+
+    const existingGame = savedGames.find((game) => game.id === gameId);
+    if (existingGame) {
+      return currentSGF !== existingGame.sgf;
+    }
+
     const newWeiqi = new Weiqi(BOARD_SIZE);
     const newRecord = new Record(newWeiqi.getBoard());
     const newSGF = SGFConverter.toSGF(newRecord);
-    if (currentSGF === newSGF) {
-      return false;
-    }
-    if (gameIndex === undefined) {
-      return true;
-    }
-
-    return currentSGF !== savedSGF;
+    return currentSGF !== newSGF;
   };
 
   return (
@@ -472,19 +556,23 @@ const WeiqiBoardScreen = ({ route }) => {
   }
 
   function menuModal() {
-    <MenuModal
-      visible={modalVisible}
-      onRequestClose={toggleModal}
-      onMenuItemPress={handleMenuItemPress}
-    />;
+    return (
+      <MenuModal
+        visible={modalVisible}
+        onRequestClose={toggleModal}
+        onMenuItemPress={handleMenuItemPress}
+      />
+    );
   }
   function messageModal() {
-    <MessageModal
-      visible={messageModalVisible}
-      onRequestClose={toggleMessageModal}
-      onSave={handleMessageSave}
-      defaultValues={recordMetaData}
-    />;
+    return (
+      <MessageModal
+        visible={messageModalVisible}
+        onRequestClose={toggleMessageModal}
+        onSave={handleMessageSave}
+        defaultValues={recordMetaData}
+      />
+    );
   }
 };
 const styles = StyleSheet.create({

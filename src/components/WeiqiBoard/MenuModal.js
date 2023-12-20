@@ -30,6 +30,14 @@ const MenuModal = ({ visible, onRequestClose, onMenuItemPress }) => {
         onMenuItemPress("board_settings");
       },
     },
+    {
+      title: t("deleteRecord"),
+      icon: "delete",
+      action: "delete_record",
+      onPress: () => {
+        onMenuItemPress("delete_record");
+      },
+    },
   ];
 
   return (

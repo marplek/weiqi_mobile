@@ -4,6 +4,7 @@ import {
   TransitionPresets,
   createStackNavigator,
 } from "@react-navigation/stack";
+import searchScreen from "../screens/other/searchScreen";
 import bottomTabBarScreen from "../screens/bottomTabBarScreen";
 import LoadingScreen from "../screens/loadingScreen";
 import WeiqiBoardScreen from "../screens/category/weiqiBoardScreen";
@@ -35,6 +36,7 @@ const AppStack = () => {
           component={bottomTabBarScreen}
           options={{ ...TransitionPresets.DefaultTransition }}
         />
+        <Stack.Screen name="Search" component={searchScreen} />
         <Stack.Screen name="WeiqiBoard" component={WeiqiBoardScreen} />
         <Stack.Screen name="Games" component={GamesScreen} />
       </Stack.Navigator>

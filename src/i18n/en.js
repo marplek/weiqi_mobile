@@ -34,6 +34,7 @@ const en = {
     markAllMoves: "Mark All Moves",
     markLastMoveNumber: "Mark Last Move Number",
     moveMarks: "Move Marks",
+    deleteRecord: "Delete Record",
   },
 };
 
