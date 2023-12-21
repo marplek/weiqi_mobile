@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import SGFConverter from "../../utils/JGO/SGF";
+import { timeAgo } from "../../utils/timeAgo";
+
 import GoBoardPreview from "../../components/GoBoardPreview";
 import { useFocusEffect } from "@react-navigation/native";
 import { Colors, Fonts, Sizes } from "../../constants/styles";
@@ -63,6 +65,7 @@ const GamesScreen = ({ navigation }) => {
   const renderItem = ({ item }) => {
     const record = SGFConverter.toRecord(item.sgf);
     const stones = record.currentNode.board;
+
     return (
       <TouchableOpacity
         onPress={() =>
@@ -73,6 +76,14 @@ const GamesScreen = ({ navigation }) => {
         style={styles.touchableOpacityContainer}
       >
         <GoBoardPreview stones={stones} width={200} height={200} />
+        <View style={styles.gameInfoContainer}>
+          <Text style={styles.gameInfoText}>
+            Updated: {timeAgo(item.timestamp)}
+          </Text>
+          <Text style={styles.gameInfoText}>Black: {record.blackPlayer}</Text>
+          <Text style={styles.gameInfoText}>White: {record.whitePlayer}</Text>
+          <Text style={styles.gameInfoText}>Result: {record.result}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -117,9 +128,17 @@ const styles = StyleSheet.create({
     paddingVertical: Sizes.fixPadding,
   },
   touchableOpacityContainer: {
+    flexDirection: "row",
     padding: 10,
     borderBottomWidth: 0.5,
     borderBottomColor: "gray",
+  },
+  gameInfoContainer: {
+    paddingLeft: 10,
+  },
+  gameInfoText: {
+    fontSize: 14,
+    color: "black",
   },
 });
 

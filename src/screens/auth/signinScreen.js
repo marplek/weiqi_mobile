@@ -16,6 +16,9 @@ import {
 import { Colors, Fonts, Sizes } from "../../constants/styles";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
+import axios from "axios";
+import * as SecureStore from "expo-secure-store";
+
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const SigninScreen = ({ navigation }) => {
@@ -40,7 +43,7 @@ const SigninScreen = ({ navigation }) => {
   }
 
   const [state, setState] = useState({
-    emailOrMobileNo: null,
+    email: null,
     password: null,
     securePassword: false,
     backClickCount: 0,
@@ -48,8 +51,39 @@ const SigninScreen = ({ navigation }) => {
 
   const updateState = (data) => setState((state) => ({ ...state, ...data }));
 
-  const { emailOrMobileNo, password, securePassword, backClickCount } = state;
+  const { email, password, securePassword, backClickCount } = state;
 
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      alert("Please enter email and password");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://ticketing.dev/api/users/signin",
+        {
+          email,
+          password,
+        }
+      );
+      console.log("Response Data:", response.data);
+
+      const jwtToken = response.data.jwt;
+      if (jwtToken) {
+        await SecureStore.setItemAsync("userToken", String(jwtToken));
+        navigation.push("BottomTabBar");
+        console.log("Login successful", response.data);
+      } else {
+        console.error("JWT token not found");
+      }
+
+      navigation.push("BottomTabBar");
+      console.log("Login successful", response.data);
+    } catch (error) {
+      console.error("Login error", error.response?.data || error.message);
+    }
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backColor }}>
       <StatusBar translucent={true} backgroundColor="transparent" />
@@ -73,7 +107,7 @@ const SigninScreen = ({ navigation }) => {
               }}
               showsVerticalScrollIndicator={false}
             >
-              {emailOrMobileNoTextField()}
+              {emailTextField()}
               {passwordTextField()}
               {forgetPasswordText()}
               {dontHaveAccountInfo()}
@@ -98,7 +132,7 @@ const SigninScreen = ({ navigation }) => {
     return (
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => navigation.push("Signup")}
+        onPress={handleSignIn}
         style={styles.signinButtonStyle}
       >
         <Text style={{ ...Fonts.whiteColor20Bold }}>Sign In</Text>
@@ -187,7 +221,7 @@ const SigninScreen = ({ navigation }) => {
     );
   }
 
-  function emailOrMobileNoTextField() {
+  function emailTextField() {
     return (
       <View
         style={{
@@ -197,9 +231,9 @@ const SigninScreen = ({ navigation }) => {
       >
         <TextInput
           selectionColor={Colors.blackColor}
-          value={emailOrMobileNo}
-          onChangeText={(text) => updateState({ emailOrMobileNo: text })}
-          placeholder="Email / Mobile"
+          value={email}
+          onChangeText={(text) => updateState({ email: text })}
+          placeholder="Email"
           placeholderTextColor={Colors.grayColor}
           style={{ ...Fonts.blackColor14SemiBold }}
         />
