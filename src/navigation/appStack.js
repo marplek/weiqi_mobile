@@ -7,8 +7,9 @@ import {
 import searchScreen from "../screens/other/searchScreen";
 import bottomTabBarScreen from "../screens/bottomTabBarScreen";
 import LoadingScreen from "../screens/loadingScreen";
-import WeiqiBoardScreen from "../screens/category/weiqiBoardScreen";
-import GamesScreen from "../screens/category/GamesScreen";
+import GameRecordingScreen from "../screens/category/GameRecordingScreen.js";
+import GameScreen from "../screens/category/GameScreen";
+import MyGamesScreen from "../screens/category/MyGamesScreen";
 import signinScreen from "../screens/auth/signinScreen";
 import signupScreen from "../screens/auth/signupScreen";
 import verificationScreen from "../screens/auth/verificationScreen";
@@ -37,8 +38,9 @@ const AppStack = () => {
           options={{ ...TransitionPresets.DefaultTransition }}
         />
         <Stack.Screen name="Search" component={searchScreen} />
-        <Stack.Screen name="WeiqiBoard" component={WeiqiBoardScreen} />
-        <Stack.Screen name="Games" component={GamesScreen} />
+        <Stack.Screen name="GameRecording" component={GameRecordingScreen} />
+        <Stack.Screen name="Game" component={GameScreen} />
+        <Stack.Screen name="MyGames" component={MyGamesScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

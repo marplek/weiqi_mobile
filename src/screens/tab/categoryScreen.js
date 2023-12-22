@@ -19,17 +19,20 @@ const categoriesList = [
   {
     id: "1",
     categoryImage: require("../../../assets/images/category/game.png"),
-    category: "WeiqiBoard",
+    category: "GameRecording",
+    name: "Game Recording",
   },
   {
     id: "2",
     categoryImage: require("../../../assets/images/category/game.png"),
-    category: "Games",
+    category: "MyGames",
+    name: "My Games",
   },
   {
     id: "3",
     categoryImage: require("../../../assets/images/category/timer.png"),
     category: "TIMER",
+    name: "TIMER",
   },
 ];
 
@@ -56,7 +59,7 @@ const CategoryScreen = ({ navigation }) => {
           style={{ width: 50.0, height: 50.0 }}
           resizeMode="contain"
         />
-        <Text style={{ ...Fonts.blackColor14Bold }}>{item.category}</Text>
+        <Text style={{ ...Fonts.blackColor14Bold }}>{item.name}</Text>
       </TouchableOpacity>
     );
     return (

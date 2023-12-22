@@ -16,7 +16,7 @@ import GoBoardPreview from "../../components/GoBoardPreview";
 import { useFocusEffect } from "@react-navigation/native";
 import { Colors, Fonts, Sizes } from "../../constants/styles";
 import { MaterialIcons } from "@expo/vector-icons";
-const GamesScreen = ({ navigation }) => {
+const MyGamesScreen = ({ navigation }) => {
   const [savedGames, setSavedGames] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -53,8 +53,9 @@ const GamesScreen = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchSavedGames(page);
-    }, [page])
+      setPage(1);
+      fetchSavedGames(1);
+    }, [])
   );
 
   const loadMoreGames = () => {
@@ -69,7 +70,7 @@ const GamesScreen = ({ navigation }) => {
     return (
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate("WeiqiBoard", {
+          navigation.navigate("Game", {
             data: item,
           })
         }
@@ -77,12 +78,23 @@ const GamesScreen = ({ navigation }) => {
       >
         <GoBoardPreview stones={stones} width={200} height={200} />
         <View style={styles.gameInfoContainer}>
-          <Text style={styles.gameInfoText}>
-            Updated: {timeAgo(item.timestamp)}
-          </Text>
-          <Text style={styles.gameInfoText}>Black: {record.blackPlayer}</Text>
-          <Text style={styles.gameInfoText}>White: {record.whitePlayer}</Text>
-          <Text style={styles.gameInfoText}>Result: {record.result}</Text>
+          <View style={styles.gameDetailsContainer}>
+            <Text style={styles.gameInfoText}>
+              Black: {record.metaData.blackPlayer}
+            </Text>
+            <Text style={styles.gameInfoText}>
+              White: {record.metaData.whitePlayer}
+            </Text>
+            <Text style={styles.gameInfoText}>
+              Result: {record.metaData.result}
+            </Text>
+          </View>
+          <View style={styles.timestampAndPermissionContainer}>
+            <Text style={styles.permissionText}>{item.permission}</Text>
+            <Text style={styles.updatedTimeText}>
+              {timeAgo(item.timestamp)}
+            </Text>
+          </View>
         </View>
       </TouchableOpacity>
     );
@@ -134,12 +146,27 @@ const styles = StyleSheet.create({
     borderBottomColor: "gray",
   },
   gameInfoContainer: {
+    flex: 1,
     paddingLeft: 10,
+    justifyContent: "space-between",
   },
   gameInfoText: {
     fontSize: 14,
     color: "black",
   },
+  timestampAndPermissionContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  permissionText: {
+    fontSize: 14,
+    color: "gray",
+  },
+  updatedTimeText: {
+    fontSize: 14,
+    color: "gray",
+  },
 });
 
-export default GamesScreen;
+export default MyGamesScreen;

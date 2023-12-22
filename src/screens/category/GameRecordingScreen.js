@@ -1,13 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import WeiqiBoard from "../../components/WeiqiBoard/WeiqiBoard";
-import NavigationButtons from "../../components/WeiqiBoard/NavigationButtons";
-import MenuModal from "../../components/WeiqiBoard/MenuModal";
-import MessageModal from "../../components/WeiqiBoard/MessageModal";
-import BoardSettingsModal from "../../components/WeiqiBoard/BoardSettingsModal";
-import { useTranslation } from "react-i18next";
-import { Colors, Fonts, Sizes } from "../../constants/styles";
-import uuid from "react-native-uuid";
-
 import {
   View,
   Dimensions,
@@ -22,12 +13,23 @@ import {
   Keyboard,
   BackHandler,
 } from "react-native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import RadioForm from "react-native-simple-radio-button";
+import uuid from "react-native-uuid";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
+import { useTranslation } from "react-i18next";
+
+import WeiqiBoard from "../../components/WeiqiBoard/WeiqiBoard";
+import NavigationButtons from "../../components/WeiqiBoard/NavigationButtons";
+import MenuModal from "../../components/WeiqiBoard/MenuModal";
+import MessageModal from "../../components/WeiqiBoard/MessageModal";
+import BoardSettingsModal from "../../components/WeiqiBoard/BoardSettingsModal";
+import { Colors, Fonts, Sizes } from "../../constants/styles";
 import Weiqi from "../../utils/JGO/Weiqi";
 import Record from "../../utils/JGO/Record";
 import SGFConverter from "../../utils/JGO/SGF";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { Permission } from "../../utils/Game";
 
 const BOARD_SIZE = 19;
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -36,7 +38,7 @@ const boardWidth = Math.floor(SCREEN_WIDTH * 0.91);
 const restWidth = Math.floor(SCREEN_WIDTH * 0.045);
 const gridSpacing = boardWidth / (BOARD_SIZE - 1);
 
-const WeiqiBoardScreen = ({ route }) => {
+const GameRecordingScreen = ({ route }) => {
   const navigation = useNavigation();
   const [weiqi, setWeiqi] = useState(new Weiqi(BOARD_SIZE));
   const [stones, setStones] = useState(weiqi.getBoard());
@@ -56,7 +58,15 @@ const WeiqiBoardScreen = ({ route }) => {
   const [isAddingBranch, setIsAddingBranch] = useState(false);
   const [tempBranch, setTempBranch] = useState([]);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [permission, setPermission] = useState(
+    route.params?.data.permission || Permission.PRIVATE
+  );
   const { t } = useTranslation();
+  const permissionOptions = [
+    { label: "Private", value: Permission.PRIVATE },
+    { label: "Friends", value: Permission.FRIENDS },
+    { label: "Public", value: Permission.PUBLIC },
+  ];
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
@@ -196,6 +206,7 @@ const WeiqiBoardScreen = ({ route }) => {
           ...savedGames[gameIndex],
           sgf: sgf,
           timestamp: new Date().toISOString(),
+          permission: permission,
         };
         savedGames[gameIndex] = gameData;
       } else {
@@ -203,6 +214,7 @@ const WeiqiBoardScreen = ({ route }) => {
           id: uuid.v4(),
           sgf: sgf,
           timestamp: new Date().toISOString(),
+          permission: permission,
         };
         savedGames.push(gameData);
         setGameId(gameData.id);
@@ -496,6 +508,22 @@ const WeiqiBoardScreen = ({ route }) => {
             />
           </View>
         </KeyboardAvoidingView>
+        <RadioForm
+          radio_props={permissionOptions}
+          initial={permissionOptions.findIndex(
+            (option) => option.value === permission
+          )}
+          formHorizontal={true}
+          labelHorizontal={true}
+          buttonColor={"black"}
+          selectedButtonColor={"black"}
+          buttonSize={10}
+          buttonOuterSize={20}
+          animation={true}
+          style={styles.radioFormStyle}
+          labelStyle={styles.radioLabel}
+          onPress={(value) => setPermission(value)}
+        />
       </View>
     </SafeAreaView>
   );
@@ -601,5 +629,20 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
+  radioFormStyle: {
+    marginVertical: 10,
+    alignItems: "center",
+    justifyContent: "space-around",
+    flexDirection: "row",
+  },
+  radioButton: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  radioLabel: {
+    fontSize: 16,
+    color: "#000", // change as needed
+    marginLeft: 5,
+  },
 });
-export default WeiqiBoardScreen;
+export default GameRecordingScreen;

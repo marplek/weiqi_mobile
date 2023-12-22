@@ -1,13 +1,14 @@
-const AccessLevel = {
+export const Permission = {
   PRIVATE: "private",
   FRIENDS: "friends",
   PUBLIC: "public",
 };
 
-class GameRecord {
-  constructor(id, sgf, accessLevel = AccessLevel.PRIVATE) {
+export class GameRecord {
+  constructor(id, sgf, permission = Permission.PRIVATE) {
     this.id = id;
     this.sgf = sgf;
-    this.accessLevel = accessLevel;
+    this.timestamp = new Date().toISOString();
+    this.permission = permission;
   }
 }
