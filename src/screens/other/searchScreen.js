@@ -12,32 +12,6 @@ import {
 import { Fonts, Colors, Sizes } from "../../constants/styles";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 
-const recentSearchesList = [
-  {
-    id: "1",
-    image: require("../../../assets/images/search/table.png"),
-    search: "Wedding Table",
-    city: "Baroda",
-    area: "Sherkhi",
-    rating: 5.0,
-  },
-  {
-    id: "2",
-    image: require("../../../assets/images/search/hall.png"),
-    search: "Wedding Hall",
-    city: "Baroda",
-    area: "Sherkhi",
-    rating: 5.0,
-  },
-  {
-    id: "3",
-    image: require("../../../assets/images/search/club.png"),
-    search: "Wedding Club",
-    city: "Baroda",
-    area: "Sherkhi",
-    rating: 5.0,
-  },
-];
 
 const SearchScreen = ({ navigation }) => {
   const [search, setSearch] = useState("");
@@ -103,11 +77,11 @@ const SearchScreen = ({ navigation }) => {
         >
           Recent searches
         </Text>
-        <FlatList
-          data={recentSearchesList}
+        {/* <FlatList
+          data={}
           keyExtractor={(item) => `${item.id}`}
           renderItem={renderItem}
-        />
+        /> */}
       </View>
     );
   }
@@ -122,10 +96,10 @@ const SearchScreen = ({ navigation }) => {
             style={{ marginRight: Sizes.fixPadding - 8.0 }}
             color={
               number == 5.0 ||
-              number == 4.0 ||
-              number == 3.0 ||
-              number == 2.0 ||
-              number == 1.0
+                number == 4.0 ||
+                number == 3.0 ||
+                number == 2.0 ||
+                number == 1.0
                 ? Colors.ratingColor
                 : Colors.grayColor
             }

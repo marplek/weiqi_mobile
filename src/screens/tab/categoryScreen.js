@@ -31,8 +31,8 @@ const categoriesList = [
   {
     id: "3",
     categoryImage: require("../../../assets/images/category/timer.png"),
-    category: "TIMER",
-    name: "TIMER",
+    category: "Timer",
+    name: "Timer",
   },
 ];
 

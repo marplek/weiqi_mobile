@@ -78,36 +78,8 @@ const GameRecordingScreen = ({ route }) => {
 
   useFocusEffect(
     useCallback(() => {
-      const onBackPress = async () => {
-        if (await isBoardStateChanged()) {
-          Alert.alert(
-            t("saveChanges"),
-            t("unsavedChanges"),
-            [
-              {
-                text: t("cancel"),
-                onPress: () => {},
-                style: "cancel",
-              },
-              {
-                text: t("dontSave"),
-                onPress: () => navigation.goBack(),
-              },
-              {
-                text: t("save"),
-                onPress: async () => {
-                  await handleSave();
-                  navigation.goBack();
-                },
-              },
-            ],
-            { cancelable: false }
-          );
-          return true;
-        } else {
-          navigation.goBack();
-          return true;
-        }
+      const onBackPress = () => {
+        navigation.goBack();
       };
 
       const backHandler = BackHandler.addEventListener(

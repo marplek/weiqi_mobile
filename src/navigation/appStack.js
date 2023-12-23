@@ -8,6 +8,8 @@ import searchScreen from "../screens/other/searchScreen";
 import bottomTabBarScreen from "../screens/bottomTabBarScreen";
 import LoadingScreen from "../screens/loadingScreen";
 import GameRecordingScreen from "../screens/category/GameRecordingScreen.js";
+import TimerScreen from "../screens/category/TimerScreen.js";
+
 import GameScreen from "../screens/category/GameScreen";
 import MyGamesScreen from "../screens/category/MyGamesScreen";
 import signinScreen from "../screens/auth/signinScreen";
@@ -40,6 +42,7 @@ const AppStack = () => {
         <Stack.Screen name="Search" component={searchScreen} />
         <Stack.Screen name="GameRecording" component={GameRecordingScreen} />
         <Stack.Screen name="Game" component={GameScreen} />
+        <Stack.Screen name="Timer" component={TimerScreen} />
         <Stack.Screen name="MyGames" component={MyGamesScreen} />
       </Stack.Navigator>
     </NavigationContainer>
