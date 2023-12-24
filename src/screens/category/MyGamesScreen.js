@@ -11,8 +11,7 @@ import {
 import * as SecureStore from "expo-secure-store";
 import SGFConverter from "../../utils/JGO/SGF";
 import { timeAgo } from "../../utils/timeAgo";
-
-import GoBoardPreview from "../../components/GoBoardPreview";
+import GoBoardPreview from "../../components/WeiqiBoard/GoBoardPreview";
 import { useFocusEffect } from "@react-navigation/native";
 import { Colors, Fonts, Sizes } from "../../constants/styles";
 import { MaterialIcons } from "@expo/vector-icons";

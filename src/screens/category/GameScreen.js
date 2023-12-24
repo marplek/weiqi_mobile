@@ -31,22 +31,17 @@ const boardWidth = Math.floor(SCREEN_WIDTH * 0.91);
 const restWidth = Math.floor(SCREEN_WIDTH * 0.045);
 const gridSpacing = boardWidth / (BOARD_SIZE - 1);
 
-const GameRecordingScreen = ({ route }) => {
+const GameScreen = ({ route }) => {
   const navigation = useNavigation();
   const [weiqi, setWeiqi] = useState(new Weiqi(BOARD_SIZE));
   const [stones, setStones] = useState(weiqi.getBoard());
   const [currentPlayer, setCurrentPlayer] = useState(weiqi.getCurrentPlayer());
   const [record, setRecord] = useState(new Record(weiqi.getBoard()));
   const [markers, setMarkers] = useState(record.getMarkers());
-  const [modalVisible, setModalVisible] = useState(false);
-  const [gameId, setGameId] = useState(route.params?.data.id);
-  const [recordMetaData, setRecordMetaData] = useState(record.getMetaData());
+
   const [comment, setComment] = useState("");
   const [currentMove, setCurrentMove] = useState(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const [permission, setPermission] = useState(
-    route.params?.data.permission || Permission.PRIVATE
-  );
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -66,10 +61,22 @@ const GameRecordingScreen = ({ route }) => {
     };
   }, []);
 
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
+  const fetchData = async () => {
+    if (route.params?.data) {
+      const newRecord = SGFConverter.toRecord(route.params.data.sgf);
+      setRecord(newRecord);
+      setStones(newRecord.getBoard());
+      setMarkers(newRecord.getMarkers());
+      setCurrentPlayer(newRecord.currentNode.player === 1 ? -1 : 1);
+      setCurrentMove(newRecord.currentNode.position);
+    }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [route.params?.data])
+  );
   useEffect(() => {
     if (record.currentNode) {
       record.currentNode.comment = comment;
@@ -205,6 +212,7 @@ const GameRecordingScreen = ({ route }) => {
             <NavigationButtons
               onNavigate={handleNavigation}
               screenHeight={SCREEN_HEIGHT}
+              simpleMode={true}
             />
           </View>
         </KeyboardAvoidingView>
@@ -249,7 +257,7 @@ const styles = StyleSheet.create({
   rightIcons: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "right",
     width: Math.floor(SCREEN_HEIGHT * 0.08),
   },
   sgfText: {
@@ -280,4 +288,4 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
-export default GameRecordingScreen;
+export default GameScreen;

@@ -7,12 +7,11 @@ import ModalDropdown from "react-native-modal-dropdown";
 const screenHeight = Dimensions.get("window").height;
 const screenWidth = Dimensions.get("window").width;
 
-const NavigationButtons = ({ onNavigate, proTool = true, setSelectedMode }) => {
+const NavigationButtons = ({ onNavigate, proTool = true, setSelectedMode, simpleMode = false, }) => {
   const [isToolVisible, setIsToolVisible] = useState(false);
   const [selectedLetter, setSelectedLetter] = useState("A");
   const [currentSelectedMode, setCurrentSelectedMode] = useState("normal");
   const [showSaveDeleteIcons, setShowSaveDeleteIcons] = useState(false);
-
   const mode = {
     "circle-half-full": "normal",
     "git-merge": "branch",
@@ -24,7 +23,12 @@ const NavigationButtons = ({ onNavigate, proTool = true, setSelectedMode }) => {
     letter: "letter",
     cancel: "cancel",
   };
-
+  const simpleNavIcons = [
+    { name: "angle-double-left", type: "font-awesome", action: "prev5" },
+    { name: "angle-left", type: "font-awesome", action: "prev" },
+    { name: "angle-right", type: "font-awesome", action: "next" },
+    { name: "angle-double-right", type: "font-awesome", action: "next5" },
+  ];
   const handleModeSelect = (iconName) => {
     setCurrentSelectedMode(mode[iconName]);
     onNavigate("mode", mode[iconName]);
@@ -160,7 +164,7 @@ const NavigationButtons = ({ onNavigate, proTool = true, setSelectedMode }) => {
       )}
 
       <View style={styles.buttonContainer}>
-        {navIcons.map((icon, index) => (
+        {(simpleMode ? simpleNavIcons : navIcons).map((icon, index) => (
           <TouchableOpacity
             key={index}
             onPress={() => {

@@ -11,9 +11,9 @@ import {
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import Svg, { Circle, Line, Rect } from 'react-native-svg';
-import Weiqi from '../utils/JGO/Weiqi';
-import Record from '../utils/JGO/Record';
-import SGFConverter from '../utils/JGO/SGF';
+import Weiqi from '../../utils/JGO/Weiqi';
+import Record from '../../utils/JGO/Record';
+import SGFConverter from '../../utils/JGO/SGF';
 import { Icon } from 'react-native-elements';
 
 const BOARD_SIZE = 19;
